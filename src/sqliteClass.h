@@ -2,17 +2,30 @@
 #include <functional>
 #include "sqlite3.h"
 
+/// @brief  A thin header only C++ wrapper for the sqlite C API
 class sqliteClass
 {
 public:
+    /// @brief open database
+    /// @param filepath
+    /// @return 0 for OK
     int open(const std::string &filepath)
     {
         return sqlite3_open(filepath.c_str(), &db);
     }
+
+    /// @brief execute SQL query, no return data expected
+    /// @param query 
+    /// @return 0 for OK
     int exec(const std::string &query)
     {
         return sqlite3_exec(db, query.c_str(), 0, 0, &dbErrMsg);
     }
+
+    /// @brief execute SQL query, with return data expected
+    /// @param query
+    /// @param rowHandler
+    /// @return
     int exec(const std::string &query,
              std::function<bool(sqlite3_stmt *)> rowHandler)
     {
@@ -28,9 +41,14 @@ public:
             rowHandler(stmt);
         }
     }
-    int column_int( sqlite3_stmt *stmt, int index )
+
+    /// @brief read column value as integer, call from row_handler
+    /// @param stmt 
+    /// @param index 
+    /// @return 
+    int column_int(sqlite3_stmt *stmt, int index)
     {
-        return sqlite3_column_int(stmt,index);
+        return sqlite3_column_int(stmt, index);
     }
 
 private:
