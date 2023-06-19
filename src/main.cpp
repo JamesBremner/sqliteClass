@@ -1,34 +1,43 @@
-#include <string>
-#include <fstream>
-#include <sstream>
 #include <iostream>
-#include <vector>
-#include <algorithm>
-#include <wex.h>
-#include "cStarterGUI.h"
+#include <string>
+#include <functional>
+#include "sqlite3.h"
+#include "sqliteClass.h"
 
-class cGUI : public cStarterGUI
+
+
+int main(int argc, char *argv[])
 {
-public:
-    cGUI()
-        : cStarterGUI(
-              "Starter",
-              {50, 50, 1000, 500}),
-          lb(wex::maker::make < wex::label >(fm))
+    sqliteClass DB;
+    if (DB.open("test.dat"))
     {
-        lb.move(50, 50, 100, 30);
-        lb.text("Hello World");
-
-        show();
-        run();
+        std::cout << "cannot open database\n";
+        exit(2);
     }
-
-private:
-    wex::label &lb;
-};
-
-main()
-{
-    cGUI theGUI;
+    DB.exec("CREATE TABLE IF NOT EXISTS like ( userid, likeid );");
+    DB.exec("DELETE FROM like;");
+    DB.exec("INSERT INTO like VALUES "
+            "(1,1),(1,2),"
+            "(2,2),(2,3),"
+            "(3,3),(3,1),"
+            "(4,3),(4,1);");
+    int owner = 1;
+    std::string ownerInterests = "1,2";
+    std::string query = "SELECT userid,likeid "
+                        "FROM like "
+                        "WHERE userid != " +
+                        std::to_string(owner) +
+                        " AND likeid IN ( " + ownerInterests + " );";
+    int found = 0;
+    DB.exec(query,
+            [&](sqlite3_stmt *stmt) -> bool
+            {
+                std::cout << DB.column_int( stmt, 0 )
+                    << " | " <<  DB.column_int( stmt, 0 )
+                    << "\n";
+                found++;
+                return true;
+            });
+    std::cout << found << " rows found\n";
     return 0;
 }
