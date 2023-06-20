@@ -1,16 +1,21 @@
 #  A thin, header only, C++ wrapper for the sqlite C API
 
+To use this successfully you will need
+
+ - Genereal knowledge of C++17 or later coding
+ - Knowledge of the SQLite C API.  This does not hide the API, it is meant to enable succint C++ code without any loss of performance
+ - Knowledge of C++17 lambda.  Lambdas are used for executing prepared statements.
+
+## Example Usage
 ```
 #include <iostream>
 #include <string>
 
-#include "sqlite3.h"
 #include "sqliteClass.h"
-
 
 int main(int argc, char *argv[])
 {
-    sqliteClass DB;
+    raven::sqliteClass DB;
     if (DB.open("test.dat"))
     {
         std::cout << "cannot open database\n";
