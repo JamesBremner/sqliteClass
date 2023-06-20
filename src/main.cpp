@@ -30,13 +30,10 @@ int main(int argc, char *argv[])
                         "WHERE userid != ? "
                         " AND likeid IN ( " +
                         ownerInterests + " );";
-    // auto stmt = DB.prepare( query );
-    // stmt->bind(1, owner);
-
-    sqliteClassStmt st(DB,query);
-    st.bind(1,owner);
+    auto stmt = DB.prepare( query );
+    DB.bind(stmt,1,owner);
     int found = 0;
-    DB.exec(st,
+    DB.exec(stmt,
             [&](sqliteClassStmt& stmt) -> bool
             {
                 std::cout << stmt.column_int(0)

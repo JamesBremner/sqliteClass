@@ -32,17 +32,25 @@ public:
         const std::string &query,
         std::function<bool(sqliteClassStmt&)> rowHandler);
 
-    // sqliteClassStmt * prepare(const std::string &query);
+    /// @brief Prepare a statement
+    /// @param query 
+    /// @return prepared statement
+    sqliteClassStmt * prepare(const std::string &query);
 
-    // int bind( sqliteClassStmt * stmt, int index, int value );
+    /// @brief Bind value to prepared statement place holder
+    /// @param stmt prepared statement
+    /// @param index index of place holder
+    /// @param value 
+    /// @return 0 for OK
+    int bind( sqliteClassStmt * stmt, int index, int value );
 
 
-    /// @brief execute statement, with return data expected
+    /// @brief execute prpared statement, with return data expected
     /// @param stmt
     /// @param rowHandler called on each row returned
-    /// @return
+    /// @return 
     int exec(
-        sqliteClassStmt & stmt,
+        sqliteClassStmt * stmt,
         std::function<bool(sqliteClassStmt&)> rowHandler);
 
     /// @brief read column value as integer, call from row_handler
