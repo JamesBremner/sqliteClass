@@ -1,14 +1,13 @@
 #include <iostream>
 #include <string>
 
-#include "sqlite3.h"
 #include "sqliteClass.h"
 
 int main(int argc, char *argv[])
 {
     // construct test database
 
-    sqliteClass DB;
+    raven::sqliteClass DB;
     if (DB.open("test.dat"))
     {
         std::cout << "cannot open database\n";
@@ -34,7 +33,7 @@ int main(int argc, char *argv[])
     DB.bind(stmt,1,owner);
     int found = 0;
     DB.exec(stmt,
-            [&](sqliteClassStmt& stmt) -> bool
+            [&](raven::sqliteClassStmt& stmt) -> bool
             {
                 std::cout << stmt.column_int(0)
                           << " | " << stmt.column_int(0)
@@ -58,7 +57,7 @@ int main(int argc, char *argv[])
 
     found = 0;
     DB.exec(query,
-            [&](sqliteClassStmt& stmt) -> bool
+            [&](raven::sqliteClassStmt& stmt) -> bool
             {
                 std::cout << stmt.column_int(0)
                           << " | " << stmt.column_int(0)

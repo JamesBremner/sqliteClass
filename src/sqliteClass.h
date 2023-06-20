@@ -2,6 +2,7 @@
 #include <functional>
 #include "sqlite3.h"
 
+namespace raven {
 class sqliteClassStmt;
 
 /// @brief  A thin header only C++ wrapper for the sqlite C API
@@ -48,10 +49,18 @@ public:
     /// @brief execute prpared statement, with return data expected
     /// @param stmt
     /// @param rowHandler called on each row returned
-    /// @return 
+    /// @return 0 for OK
+    ///
+    /// When all rows have been read, the prepared statement is reset
     int exec(
         sqliteClassStmt * stmt,
         std::function<bool(sqliteClassStmt&)> rowHandler);
+
+    /// @brief reset prepared statement
+    /// @param stmt 
+    /// @return 0 for OK
+    int reset( 
+        sqliteClassStmt * stmt);
 
     /// @brief read column value as integer, call from row_handler
     /// @param stmt
@@ -62,11 +71,6 @@ public:
         return sqlite3_column_int(stmt, index);
     }
 
-    sqlite3 *getdb()
-    {
-        return db;
-    }
-
 private:
     sqlite3 *db;
     char *dbErrMsg;
@@ -75,9 +79,9 @@ private:
 class sqliteClassStmt
 {
 public:
-    sqliteClassStmt(sqliteClass &db, const std::string &query)
+    sqliteClassStmt(sqlite3 *db, const std::string &query)
     {
-        int rc = sqlite3_prepare_v2(db.getdb(), query.c_str(), -1, &stmt, 0);
+        int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, 0);
         if( rc )    
             throw std::runtime_error(
                 "sqlite3_prepare " + query            );
@@ -94,11 +98,23 @@ public:
     {
         return sqlite3_bind_int( stmt, index, value );
     }
+    int reset()
+    {
+        return sqlite3_reset( stmt );
+    }
     int column_int( int index )
     {
         return sqlite3_column_int( stmt, index );
+    }
+    std::string column_string( int index ) {
+        return std::string((char *)sqlite3_column_text(stmt, index));
+    }
+    double column_double( int index )
+    {
+        return sqlite3_column_double( stmt, index );
     }
 
 private:
     sqlite3_stmt *stmt;
 };
+}
