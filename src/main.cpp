@@ -1,13 +1,13 @@
 #include <iostream>
 #include <string>
-#include <functional>
+
 #include "sqlite3.h"
 #include "sqliteClass.h"
 
-
-
 int main(int argc, char *argv[])
 {
+    // construct test database
+
     sqliteClass DB;
     if (DB.open("test.dat"))
     {
@@ -21,23 +21,58 @@ int main(int argc, char *argv[])
             "(2,2),(2,3),"
             "(3,3),(3,1),"
             "(4,3),(4,1);");
+
+    // query with bound values
     int owner = 1;
     std::string ownerInterests = "1,2";
     std::string query = "SELECT userid,likeid "
                         "FROM like "
-                        "WHERE userid != " +
-                        std::to_string(owner) +
-                        " AND likeid IN ( " + ownerInterests + " );";
+                        "WHERE userid != ? "
+                        " AND likeid IN ( " +
+                        ownerInterests + " );";
+    // auto stmt = DB.prepare( query );
+    // stmt->bind(1, owner);
+
+    sqliteClassStmt st(DB,query);
+    st.bind(1,owner);
     int found = 0;
-    DB.exec(query,
-            [&](sqlite3_stmt *stmt) -> bool
+    DB.exec(st,
+            [&](sqliteClassStmt& stmt) -> bool
             {
-                std::cout << DB.column_int( stmt, 0 )
-                    << " | " <<  DB.column_int( stmt, 0 )
-                    << "\n";
+                std::cout << stmt.column_int(0)
+                          << " | " << stmt.column_int(0)
+                          << "\n";
                 found++;
                 return true;
             });
     std::cout << found << " rows found\n";
+    if (found != 3)
+    {
+        std::cout << "error\n";
+    }
+
+    // query
+    owner = 2;
+    query = "SELECT userid,likeid "
+            "FROM like "
+            "WHERE userid != " +
+            std::to_string(owner) +
+            " AND likeid IN ( " + ownerInterests + " );";
+
+    found = 0;
+    DB.exec(query,
+            [&](sqliteClassStmt& stmt) -> bool
+            {
+                std::cout << stmt.column_int(0)
+                          << " | " << stmt.column_int(0)
+                          << "\n";
+                found++;
+                return true;
+            });
+    std::cout << found << " rows found\n";
+    if (found != 4)
+    {
+        std::cout << "error\n";
+    }
     return 0;
 }

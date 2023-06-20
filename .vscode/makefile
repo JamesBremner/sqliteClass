@@ -22,6 +22,7 @@ CCflags = -std=c++17 $(OPT) -D_mingw_
 # sources
 OBJ_starter = \
 	$(ODIR)/main.o \
+	$(ODIR)/sqliteClass.o \
 	$(ODIR)/sqlite3.o
 
 ### COMPILE
