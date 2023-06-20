@@ -2,7 +2,7 @@
 
 To use this successfully you will need
 
- - Genereal knowledge of C++17 or later coding
+ - General knowledge of C++17 or later coding
  - Knowledge of the SQLite C API.  This does not hide the API, it is meant to enable succint C++ code without any loss of performance
  - Knowledge of C++17 lambda.  Lambdas are used for executing prepared statements.
 
