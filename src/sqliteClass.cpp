@@ -10,6 +10,18 @@ int sqliteClass::exec(const std::string &query,
 }
 
 int sqliteClass::exec(
+    sqliteClassStmt *stmt)
+{
+    while (1)
+    {
+        int rc = stmt->step();
+        if (rc == SQLITE_DONE) {
+            stmt->reset();
+            return 0;
+        }
+    }
+}
+int sqliteClass::exec(
     sqliteClassStmt *stmt,
     std::function<bool(sqliteClassStmt &)> rowHandler)
 {

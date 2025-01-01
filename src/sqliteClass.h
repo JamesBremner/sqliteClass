@@ -46,7 +46,14 @@ public:
     int bind( sqliteClassStmt * stmt, int index, int value );
 
 
-    /// @brief execute prpared statement, with return data expected
+    /// @brief execute prepared statement, no return data expected
+    /// @param stmt
+    /// @return 0 for OK
+    ///
+    /// When all rows have been read, the prepared statement is reset
+    int exec( sqliteClassStmt * stmt );
+
+    /// @brief execute prepared statement, with return data expected
     /// @param stmt
     /// @param rowHandler called on each row returned
     /// @return 0 for OK
